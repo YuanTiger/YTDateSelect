@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
@@ -16,9 +17,12 @@ import java.util.List;
 
 import cardlop.my.com.ytdateselect.R;
 import cardlop.my.com.ytdateselect.base.BaseRecyclerViewHolder;
+import cardlop.my.com.ytdateselect.bean.DayBean;
 import cardlop.my.com.ytdateselect.bean.MonthBean;
 import cardlop.my.com.ytdateselect.utils.YTDateUtils;
-import view.MonthView;
+import cardlop.my.com.ytdateselect.view.IMonthViewItemSelect;
+import cardlop.my.com.ytdateselect.view.MonthView;
+import cardlop.my.com.ytdateselect.view.MonthViewManager;
 
 /**
  * Author：mengyuan
@@ -35,6 +39,7 @@ public class ScrollDateActivity extends AppCompatActivity {
 
     private RecyclerViewAdapter adapter;
 
+    private MonthViewManager manager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,14 +52,15 @@ public class ScrollDateActivity extends AppCompatActivity {
 
         initData();
     }
+
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.recycler_view);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
 
-
     }
+
     private void initData() {
         //获取2017年11月-2018年11月的日期数据
         dataList = YTDateUtils.generateMonths(2017, 11, 2018, 11);
@@ -68,8 +74,16 @@ public class ScrollDateActivity extends AppCompatActivity {
         } else {
             adapter.notifyDataSetChanged();
         }
+        //选择事件的回调
+        manager = new MonthViewManager(adapter, dataList, new IMonthViewItemSelect() {
+            @Override
+            public void onSelectSuccess(DayBean startDay, DayBean endDay) {
+                Toast.makeText(ScrollDateActivity.this, startDay.month + "-" + startDay.day + ":" + endDay.month + "-" + endDay.day, Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK);
+                finish();
+            }
+        });
     }
-
 
 
     //--------------------------------Adapter--------------------------------
@@ -118,7 +132,7 @@ public class ScrollDateActivity extends AppCompatActivity {
 
         @Override
         public BaseRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ItemHolder(R.layout.item_scroll_data_item, parent);
+            return new MonthItemHolder(R.layout.item_scroll_data_item, parent);
 
         }
 
@@ -155,10 +169,10 @@ public class ScrollDateActivity extends AppCompatActivity {
     }
 
     //日历Holder
-    public class ItemHolder extends BaseRecyclerViewHolder<MonthBean> {
+    public class MonthItemHolder extends BaseRecyclerViewHolder<MonthBean> {
         private MonthView monthView;
 
-        public ItemHolder(int viewId, ViewGroup parent) {
+        public MonthItemHolder(int viewId, ViewGroup parent) {
             super(viewId, parent);
             monthView = itemView.findViewById(R.id.month_view);
         }
@@ -166,7 +180,9 @@ public class ScrollDateActivity extends AppCompatActivity {
         @Override
         public void refreshData(MonthBean data, int position) {
 
-            monthView.setData(data);
+
+            //初始化条目
+            manager.bind(data, monthView);
         }
     }
 }

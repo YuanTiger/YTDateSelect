@@ -1,4 +1,4 @@
-package view;
+package cardlop.my.com.ytdateselect.view;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -10,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.util.List;
 
 import cardlop.my.com.ytdateselect.R;
 import cardlop.my.com.ytdateselect.base.BaseRecyclerViewHolder;
@@ -30,9 +28,9 @@ import cardlop.my.com.ytdateselect.bean.MonthBean;
 public class MonthView extends RecyclerView {
 
     //本月的数据
-    private MonthBean monthBean;
+    private MonthBean dataMonth;
     //是否显示本月中包含的其他月份日期
-    private boolean isShowOtherMotn = false;
+    private boolean isShowOtherMotn = true;
     //是否显示星期的标题
     private boolean isShowWeekTitle = false;
     //每天的点击事件回调
@@ -40,6 +38,9 @@ public class MonthView extends RecyclerView {
 
     private MonthAdapter adapter;
 
+    private int beforeSize;//本月数据之前的条目长度
+    private int daySize;//本月数据的条目长度
+    private int lastSize;//本月数据之后的条目长度
 
     public MonthView(Context context) {
         super(context);
@@ -67,7 +68,12 @@ public class MonthView extends RecyclerView {
      * @param data
      */
     public void setData(MonthBean data) {
-        monthBean = data;
+        dataMonth = data;
+
+
+        beforeSize = dataMonth.beforeList == null ? 0 : dataMonth.beforeList.size();
+        daySize = dataMonth.dayList == null ? 0 : dataMonth.dayList.size();
+        lastSize = dataMonth.lastList == null ? 0 : dataMonth.lastList.size();
 
         initAdapter();
     }
@@ -81,56 +87,103 @@ public class MonthView extends RecyclerView {
         }
     }
 
-    /**
-     * 选中两个日期中的所有日期
-     */
-    public void addSelectedDay(DayBean startDay,DayBean endDay) {
-
-    }
-
-    /**
-     * 清除所有选中的日期,直接进行RecyclerVie的刷新即可
-     * 因为Holder默认未选中
-     */
-    public void clearSelectedDays() {
-        for (DayBean dayBean : monthBean.dayList) {
-            dayBean.isSelect = false;
-        }
-        initAdapter();
-    }
-
     //--------------------------------Adapter--------------------------------
     //--------------------------------Adapter--------------------------------
     //--------------------------------Adapter--------------------------------
     public class MonthAdapter extends RecyclerView.Adapter<BaseRecyclerViewHolder> {
 
+        private final int ITEM_CURRENT = 101;//本月的条目
+        private final int ITEM_OTHER = 102;//非本月的条目
+
+
         @Override
         public BaseRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new DayItemHolder(R.layout.item_month_view, parent);
+            switch (viewType) {
+                case ITEM_CURRENT:
+                    return new CurrentDayItemHolder(R.layout.item_month_view, parent);
+                case ITEM_OTHER:
+                    return new OhterDayItemHolder(R.layout.item_month_view, parent);
+
+            }
+            return null;
         }
 
         @Override
         public void onBindViewHolder(BaseRecyclerViewHolder holder, int position) {
-            holder.refreshData(monthBean.dayList.get(position), position);
+            if (position < beforeSize) {
+                holder.refreshData(dataMonth.beforeList.get(position), position);
+            } else if (position < beforeSize + daySize) {
+                holder.refreshData(dataMonth.dayList.get(position - beforeSize), position - beforeSize);
+            } else if (position < beforeSize + daySize + lastSize) {
+                holder.refreshData(dataMonth.lastList.get(position - beforeSize - daySize), position - beforeSize - daySize);
+            }
         }
 
         @Override
         public int getItemCount() {
-            return monthBean.dayList == null ? 0 : monthBean.dayList.size();
+
+            return beforeSize + daySize + lastSize;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (position < beforeSize) {
+                return ITEM_OTHER;
+            }
+            if (position < beforeSize + daySize) {
+                return ITEM_CURRENT;
+            }
+            return ITEM_OTHER;
         }
     }
 
     //--------------------------------Holder--------------------------------
     //--------------------------------Holder--------------------------------
     //--------------------------------Holder--------------------------------
-    public class DayItemHolder extends BaseRecyclerViewHolder<DayBean> {
 
+    //非本月的数据条目
+    public class OhterDayItemHolder extends BaseRecyclerViewHolder<DayBean> {
         private LinearLayout ll_content;
         private TextView tv_day;
         private TextView tv_desc;
 
 
-        public DayItemHolder(int viewId, ViewGroup parent) {
+        public OhterDayItemHolder(int viewId, ViewGroup parent) {
+            super(viewId, parent);
+
+            ll_content = itemView.findViewById(R.id.ll_content);
+
+            tv_day = itemView.findViewById(R.id.tv_day);
+
+            tv_desc = itemView.findViewById(R.id.tv_desc);
+        }
+
+        @Override
+        public void refreshData(DayBean data, int position) {
+            //如果不需要显示其他月份的数据
+            if (!isShowOtherMotn) {
+                ll_content.setVisibility(View.INVISIBLE);
+                return;
+            }
+            ll_content.setVisibility(View.VISIBLE);
+            ll_content.setEnabled(false);
+            tv_day.setEnabled(false);
+            tv_day.setText(String.valueOf(data.day));
+
+        }
+    }
+
+    //本月的数据条目
+    public class CurrentDayItemHolder extends BaseRecyclerViewHolder<DayBean> {
+
+        private LinearLayout ll_content;
+        private TextView tv_day;
+        private TextView tv_desc;
+
+        private DayBean data;
+
+
+        public CurrentDayItemHolder(int viewId, ViewGroup parent) {
             super(viewId, parent);
 
             ll_content = itemView.findViewById(R.id.ll_content);
@@ -142,26 +195,21 @@ public class MonthView extends RecyclerView {
 
         @Override
         public void refreshData(final DayBean data, int position) {
-            //如果不需要显示其他月份的数据
-            if (!isShowOtherMotn) {
-                //如果该条目不是这个月的天数数据
-                if (!data.isBelongMonth) {
-                    ll_content.setVisibility(View.INVISIBLE);
-                    return;
-                }
-            }
-            ll_content.setVisibility(View.VISIBLE);
+
+            this.data = data;
+
             //改变选中状态
-            changeSelect(data, data.isSelect);
+            changeSelect(data.isSelect);
             //设置日期
             tv_day.setText(String.valueOf(data.day));
-
+            //描述文字
+            tv_desc.setText(data.desc);
 
             ll_content.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (dayItemClickListener != null) {
-                        dayItemClickListener.itemClick(DayItemHolder.this, data);
+                        dayItemClickListener.itemClick(MonthView.this, CurrentDayItemHolder.this, data);
                     }
                 }
             });
@@ -169,13 +217,14 @@ public class MonthView extends RecyclerView {
         }
 
 
-        public void changeSelect(DayBean data, boolean selectFlag) {
-            if (data.isSelect == selectFlag && ll_content.isSelected() == selectFlag) {
+        public void changeSelect(boolean selectFlag) {
+            if (ll_content.isSelected() == selectFlag) {
                 return;
             }
             data.isSelect = selectFlag;
             ll_content.setSelected(selectFlag);
             tv_day.setSelected(selectFlag);
+            tv_desc.setText("");
         }
 
         public void setDesc(String desc) {
@@ -187,7 +236,7 @@ public class MonthView extends RecyclerView {
     //--------------------------------Listener--------------------------------
     //--------------------------------Listener--------------------------------
     public interface DayItemClickListener {
-        void itemClick(DayItemHolder holder, DayBean data);
+        void itemClick(MonthView monthView, CurrentDayItemHolder holder, DayBean data);
     }
 
     public void setDayItemClickListener(DayItemClickListener listener) {

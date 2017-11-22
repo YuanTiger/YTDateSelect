@@ -16,11 +16,11 @@ public class DayBean {
     public int day;
     //星期几
     public int week;
-    //这一天是否属于本月
-    public boolean isBelongMonth = false;
     //这一天是否被选中
     public boolean isSelect = false;
 
+    //描述信息
+    public String desc;
 
     //如果这一天有节日，则是具体的日期名称，否则为空
     //未实现，全部为空

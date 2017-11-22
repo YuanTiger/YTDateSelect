@@ -1,6 +1,4 @@
-package view;
-
-import java.util.List;
+package cardlop.my.com.ytdateselect.view;
 
 import cardlop.my.com.ytdateselect.bean.DayBean;
 
@@ -42,7 +40,7 @@ public abstract class IMonthViewItemSelect {
      * @param startDay
      * @param endDay
      */
-    abstract void onSelectSuccess(DayBean startDay, DayBean endDay);
+    public abstract void onSelectSuccess(DayBean startDay, DayBean endDay);
 
 
 }

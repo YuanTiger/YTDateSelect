@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import cardlop.my.com.ytdateselect.activity.ScrollDateActivity;
+import cardlop.my.com.ytdateselect.activity.ScrollHomeActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_recyclerview:
-                startActivity(new Intent(this, ScrollDateActivity.class));
+                startActivity(new Intent(this, ScrollHomeActivity.class));
                 break;
         }
     }

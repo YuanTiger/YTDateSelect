@@ -15,6 +15,7 @@ import cardlop.my.com.ytdateselect.R;
 import cardlop.my.com.ytdateselect.base.BaseRecyclerViewHolder;
 import cardlop.my.com.ytdateselect.bean.DayBean;
 import cardlop.my.com.ytdateselect.bean.MonthBean;
+import cardlop.my.com.ytdateselect.constant.Constant;
 
 /**
  * Author：mengyuan
@@ -30,7 +31,7 @@ public class MonthView extends RecyclerView {
     //本月的数据
     private MonthBean dataMonth;
     //是否显示本月中包含的其他月份日期
-    private boolean isShowOtherMotn = true;
+    private boolean isShowOtherMotn = false;
     //是否显示星期的标题
     private boolean isShowWeekTitle = false;
     //每天的点击事件回调
@@ -167,8 +168,12 @@ public class MonthView extends RecyclerView {
             }
             ll_content.setVisibility(View.VISIBLE);
             ll_content.setEnabled(false);
-            tv_day.setEnabled(false);
+            ll_content.setBackgroundColor(itemView.getContext().getResources().getColor(R.color.color_f1f1f1));
+            tv_day.setTextColor(itemView.getContext().getResources().getColor(R.color.color_cccccc));
+            //设置日期
             tv_day.setText(String.valueOf(data.day));
+            //描述文字
+            tv_desc.setText(data.desc);
 
         }
     }
@@ -179,9 +184,6 @@ public class MonthView extends RecyclerView {
         private LinearLayout ll_content;
         private TextView tv_day;
         private TextView tv_desc;
-
-        private DayBean data;
-
 
         public CurrentDayItemHolder(int viewId, ViewGroup parent) {
             super(viewId, parent);
@@ -196,20 +198,19 @@ public class MonthView extends RecyclerView {
         @Override
         public void refreshData(final DayBean data, int position) {
 
-            this.data = data;
-
-            //改变选中状态
-            changeSelect(data.isSelect);
             //设置日期
             tv_day.setText(String.valueOf(data.day));
             //描述文字
             tv_desc.setText(data.desc);
+            //根据状态初始化ui
+            changeSelect(data);
+
 
             ll_content.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (dayItemClickListener != null) {
-                        dayItemClickListener.itemClick(MonthView.this, CurrentDayItemHolder.this, data);
+                        dayItemClickListener.itemClick( CurrentDayItemHolder.this, data);
                     }
                 }
             });
@@ -217,18 +218,46 @@ public class MonthView extends RecyclerView {
         }
 
 
-        public void changeSelect(boolean selectFlag) {
-            if (ll_content.isSelected() == selectFlag) {
-                return;
+        public void changeSelect(DayBean data) {
+            switch (data.state) {
+                case Constant.DayState.UNCLICK://不可点击状态
+                    ll_content.setBackgroundColor(itemView.getContext().getResources().getColor(R.color.color_f1f1f1));
+                    tv_day.setTextColor(itemView.getContext().getResources().getColor(R.color.color_cccccc));
+                    tv_desc.setText("");
+                    break;
+                case Constant.DayState.START://开始
+                    ll_content.setBackgroundColor(itemView.getContext().getResources().getColor(R.color.color_0070ff));
+                    tv_day.setTextColor(itemView.getContext().getResources().getColor(R.color.color_ffffff));
+                    tv_desc.setTextColor(itemView.getContext().getResources().getColor(R.color.color_ffffff));
+                    tv_desc.setText("开始");
+                    break;
+                case Constant.DayState.END://结束
+                    ll_content.setBackgroundColor(itemView.getContext().getResources().getColor(R.color.color_0070ff));
+                    tv_day.setTextColor(itemView.getContext().getResources().getColor(R.color.color_ffffff));
+                    tv_desc.setTextColor(itemView.getContext().getResources().getColor(R.color.color_ffffff));
+                    tv_desc.setText("结束");
+                    break;
+                case Constant.DayState.SELECT://选中
+                    ll_content.setBackgroundColor(itemView.getContext().getResources().getColor(R.color.color_9900ddff));
+                    if (data.week == Constant.Week.SUN || data.week == Constant.Week.SAT) {
+                        tv_day.setTextColor(itemView.getContext().getResources().getColor(R.color.color_f43531));
+                    } else {
+                        tv_day.setTextColor(itemView.getContext().getResources().getColor(R.color.color_333333));
+                    }
+                    tv_desc.setTextColor(itemView.getContext().getResources().getColor(R.color.color_f43531));
+                    break;
+                case Constant.DayState.NORMAL://默认状态
+                    ll_content.setBackgroundColor(itemView.getContext().getResources().getColor(R.color.color_ffffff));
+                    if (data.week == Constant.Week.SUN || data.week == Constant.Week.SAT) {
+                        tv_day.setTextColor(itemView.getContext().getResources().getColor(R.color.color_f43531));
+                    } else {
+                        tv_day.setTextColor(itemView.getContext().getResources().getColor(R.color.color_333333));
+                    }
+                    tv_desc.setTextColor(itemView.getContext().getResources().getColor(R.color.color_f43531));
+                    tv_desc.setText(data.desc);
+                    break;
             }
-            data.isSelect = selectFlag;
-            ll_content.setSelected(selectFlag);
-            tv_day.setSelected(selectFlag);
-            tv_desc.setText("");
-        }
 
-        public void setDesc(String desc) {
-            tv_desc.setText(desc);
         }
     }
 
@@ -236,7 +265,7 @@ public class MonthView extends RecyclerView {
     //--------------------------------Listener--------------------------------
     //--------------------------------Listener--------------------------------
     public interface DayItemClickListener {
-        void itemClick(MonthView monthView, CurrentDayItemHolder holder, DayBean data);
+        void itemClick(CurrentDayItemHolder holder, DayBean data);
     }
 
     public void setDayItemClickListener(DayItemClickListener listener) {

@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--选中状态 -->
-    <item android:drawable="@color/color_0090ff" android:state_selected="true" />
+    <item android:drawable="@color/color_0070ff" android:state_selected="true" />
     <!--默认状态-->
     <item android:drawable="@color/color_ffffff" />
 </selector>

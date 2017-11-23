@@ -10,10 +10,11 @@
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#cccccc"
+        android:background="@color/color_dddddd"
         android:gravity="center"
+        android:padding="2dp"
         android:textColor="@color/color_333333"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         tools:text="2016-01" />
 </LinearLayout>

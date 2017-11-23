@@ -9,7 +9,7 @@ package cardlop.my.com.ytdateselect.constant;
 
 public interface Constant {
 
-    public interface Week {
+    interface Week {
         //周日
         public int SUN = 1;
         //周一
@@ -27,4 +27,20 @@ public interface Constant {
 
 
     }
+
+    interface DayState{
+        //不可点击状态
+        int UNCLICK = -1;
+        //默认
+        int NORMAL = 0;
+        //开始日期
+        int START = 1;
+        //选中的日期，不是开始，也不是结束
+        int SELECT = 2;
+        //结束日期
+        int END = 3;
+
+
+    }
+
 }

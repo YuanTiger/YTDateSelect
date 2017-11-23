@@ -1,5 +1,8 @@
 package cardlop.my.com.ytdateselect.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +17,7 @@ import cardlop.my.com.ytdateselect.utils.YTDateUtils;
  * Desc  :一个月的Bean对象
  */
 
-public class MonthBean implements Serializable {
+public class MonthBean implements Parcelable {
     //这个月的年份
     public int year;
     //这个月的月份
@@ -33,6 +36,10 @@ public class MonthBean implements Serializable {
      * @param month
      */
     public MonthBean(int year, int month) {
+        this(year, month, -1);
+    }
+
+    public MonthBean(int year, int month, int day) {
         this.year = year;
         this.month = month;
         //获取这个月有多少天
@@ -64,6 +71,14 @@ public class MonthBean implements Serializable {
         dayList = new ArrayList<>();
         for (int i = 1; i <= dayCount; i++) {
             DayBean dayBean = YTDateUtils.getDayBean(year, month, i);
+            //如果天数小于参数day，则设置为不可点击
+            if (i < day - 1) {
+
+                dayBean.state = Constant.DayState.UNCLICK;
+            }
+            if (i == day - 1) {
+                dayBean.desc = "今天";
+            }
             dayList.add(dayBean);
         }
         //获取本月最后一天是周几
@@ -82,8 +97,57 @@ public class MonthBean implements Serializable {
                 lastList.add(dayBean);
             }
         }
-
-
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.year);
+        dest.writeInt(this.month);
+        dest.writeTypedList(dayList);
+        dest.writeTypedList(beforeList);
+        dest.writeTypedList(lastList);
+    }
+
+    protected MonthBean(Parcel in) {
+        this.year = in.readInt();
+        this.month = in.readInt();
+        this.dayList = in.createTypedArrayList(DayBean.CREATOR);
+        this.beforeList = in.createTypedArrayList(DayBean.CREATOR);
+        this.lastList = in.createTypedArrayList(DayBean.CREATOR);
+    }
+
+    public static final Parcelable.Creator<MonthBean> CREATOR = new Parcelable.Creator<MonthBean>() {
+        @Override
+        public MonthBean createFromParcel(Parcel source) {
+            return new MonthBean(source);
+        }
+
+        @Override
+        public MonthBean[] newArray(int size) {
+            return new MonthBean[size];
+        }
+    };
+
+    /**
+     * 清除选择记录
+     */
+    public void clearSelect() {
+        if (dayList == null) {
+            return;
+        }
+        for (DayBean dayBean : dayList) {
+            switch (dayBean.state) {
+                case Constant.DayState.SELECT:
+                case Constant.DayState.START:
+                case Constant.DayState.END:
+                    dayBean.state = Constant.DayState.NORMAL;
+                    break;
+            }
+        }
+    }
 }

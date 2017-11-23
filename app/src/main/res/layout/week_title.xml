@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="星期日"
-        android:textColor="@color/color_f43531"
+        android:text="日"
+        android:textColor="@color/color_333333"
         android:textSize="14sp" />
 
     <TextView
@@ -20,7 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="星期一"
+        android:text="一"
+        android:textColor="@color/color_333333"
         android:textSize="14sp" />
 
     <TextView
@@ -28,7 +29,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="星期二"
+        android:text="二"
+        android:textColor="@color/color_333333"
+
         android:textSize="14sp" />
 
     <TextView
@@ -36,7 +39,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="星期三"
+
+        android:text="三"
+        android:textColor="@color/color_333333"
         android:textSize="14sp" />
 
     <TextView
@@ -44,7 +49,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="星期四"
+
+        android:text="四"
+        android:textColor="@color/color_333333"
         android:textSize="14sp" />
 
     <TextView
@@ -52,7 +59,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="星期五"
+
+        android:text="五"
+        android:textColor="@color/color_333333"
         android:textSize="14sp" />
 
     <TextView
@@ -60,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="星期六"
-        android:textColor="@color/color_f43531"
+        android:text="六"
+        android:textColor="@color/color_333333"
         android:textSize="14sp" />
 </LinearLayout>

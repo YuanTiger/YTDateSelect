@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.ScrollHomeActivity" />
         <activity android:name=".activity.ScrollDateActivity" />
     </application>
 

@@ -1,5 +1,7 @@
 package cardlop.my.com.ytdateselect.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,13 +15,12 @@ import android.widget.Toast;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import cardlop.my.com.ytdateselect.R;
 import cardlop.my.com.ytdateselect.base.BaseRecyclerViewHolder;
 import cardlop.my.com.ytdateselect.bean.DayBean;
 import cardlop.my.com.ytdateselect.bean.MonthBean;
-import cardlop.my.com.ytdateselect.utils.YTDateUtils;
 import cardlop.my.com.ytdateselect.view.IMonthViewItemSelect;
 import cardlop.my.com.ytdateselect.view.MonthView;
 import cardlop.my.com.ytdateselect.view.MonthViewManager;
@@ -35,7 +36,7 @@ public class ScrollDateActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
 
-    private List<MonthBean> dataList;
+    private ArrayList<MonthBean> dataList;
 
     private RecyclerViewAdapter adapter;
 
@@ -48,22 +49,41 @@ public class ScrollDateActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scroll_date);
 
 
+        parseIntent();
+
+
         initRecyclerView();
 
-        initData();
+
     }
 
+
+    /**
+     * Intent解析
+     */
+    private void parseIntent() {
+        //获取2017年11月-2018年11月的日期数据
+        if (getIntent() == null) {
+            Toast.makeText(this, "数据异常, 请使用ScrollDateActivity.go()", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        dataList = getIntent().getParcelableArrayListExtra("data");
+        if (dataList == null || dataList.size() == 0) {
+            Toast.makeText(this, "数据异常, 请使用ScrollDateActivity.go()", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+    }
+
+
+    /**
+     * 初始化页面
+     */
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.recycler_view);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
-
-    }
-
-    private void initData() {
-        //获取2017年11月-2018年11月的日期数据
-        dataList = YTDateUtils.generateMonths(2017, 11, 2018, 11);
 
         if (adapter == null) {
             adapter = new RecyclerViewAdapter();
@@ -74,17 +94,41 @@ public class ScrollDateActivity extends AppCompatActivity {
         } else {
             adapter.notifyDataSetChanged();
         }
+
         //选择事件的回调
         manager = new MonthViewManager(adapter, dataList, new IMonthViewItemSelect() {
             @Override
             public void onSelectSuccess(DayBean startDay, DayBean endDay) {
-                Toast.makeText(ScrollDateActivity.this, startDay.month + "-" + startDay.day + ":" + endDay.month + "-" + endDay.day, Toast.LENGTH_SHORT).show();
-                setResult(RESULT_OK);
+                Intent intent = new Intent();
+                intent.putParcelableArrayListExtra("data", dataList);
+                String desc = startDay.year + "-" + startDay.month + "-" + startDay.day + " 至 " + endDay.year + "-" + endDay.month + "-" + endDay.day;
+                intent.putExtra("desc", desc);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
     }
 
+    public static void go(Context context, ArrayList<MonthBean> dataList) {
+        Intent intent = new Intent(context, ScrollDateActivity.class);
+        intent.putParcelableArrayListExtra("data", dataList);
+        context.startActivity(intent);
+    }
+
+    public static void goResult(AppCompatActivity activity, ArrayList<MonthBean> dataList, int requestCode) {
+        Intent intent = new Intent(activity, ScrollDateActivity.class);
+        intent.putParcelableArrayListExtra("data", dataList);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (manager != null) {
+            manager.onDestory();
+        }
+    }
 
     //--------------------------------Adapter--------------------------------
     //--------------------------------Adapter--------------------------------

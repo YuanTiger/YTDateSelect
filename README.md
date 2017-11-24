@@ -1,9 +1,9 @@
 ## 描述 ##
-参考了支付宝上的日期选择，所制作的日期选择页，效果如下:
+参考支付宝所制作的日期选择页，效果如下:
 
 ![效果展示](https://github.com/YuanTiger/YTDateSelect/blob/master/YTDateSelect_show_1.gif)
 
-## 一些知识点 ##
+## 知识点与难点 ##
 ### 1、获取指定月份有多少天 ###
 ```
 public static int getDayCountOfMonth(int year, int month) {
@@ -38,7 +38,11 @@ public static int getDayOfWeekInMonth(int year, int month, int day) {
 ```
 
 ### 3、开发思路 ###
-整个项目的结构是RecyclerView嵌套RecyclerView。
+整个项目的结构是**RecyclerView嵌套RecyclerView**。
+
+外层RecyclerView包含了固定头部条目与月份RecyclerView。
+
+每个月份RecyclerView对应了一个月份的日期展示。
 
 日期数据是单例的，在进入日期选择结果展示页的时候，第一次点击日期选择时初始化数据，接着在离开日期选择页的时候销毁数据。
 
@@ -49,6 +53,11 @@ public static int getDayOfWeekInMonth(int year, int month, int day) {
 不会去刷新无关的条目。
 
 因为内层RecyclerView的高度是不固定的，所以在调用` adapter.notifyItemChanged(int position)`时，当position为0或1时，有时会导致屏幕滚动至顶部，目前还没有找到合适的解决方案，各位看官可以自己试一试。
+
+### 4、难点 ###
+跨月、跨年选择时的UI改变。
+
+
 
 ## 感谢 ##
 其中RecyclerView的头部固定引用了[sticky-headers-recyclerview](https://github.com/timehop/sticky-headers-recyclerview)库。

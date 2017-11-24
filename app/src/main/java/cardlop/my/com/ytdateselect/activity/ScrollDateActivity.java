@@ -96,11 +96,12 @@ public class ScrollDateActivity extends AppCompatActivity {
                 intent.putExtra("desc", desc);
                 setResult(RESULT_OK, intent);
                 //延迟800秒后Finish 页面，主要为了动画可以做完
-                finishHandler.sendEmptyMessageDelayed(MESSAGE_FINISH, 800);
+                finishHandler.sendEmptyMessageDelayed(MESSAGE_FINISH, 500);
             }
         });
         //滚动到上次用户点击的位置
-        recyclerView.smoothScrollToPosition(MonthListBean.getInstance().startPosition == 0 ? 0 : MonthListBean.getInstance().startPosition + 1);
+//        recyclerView.smoothScrollToPosition(MonthListBean.getInstance().startPosition == 0 ? 0 : MonthListBean.getInstance().startPosition + 1);
+        recyclerView.smoothScrollToPosition(MonthListBean.getInstance().startPosition);
     }
 
     public static void go(Context context) {

@@ -2,14 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_ffffff"
+    android:background="@color/color_cccccc"
     android:orientation="vertical">
 
 
     <LinearLayout
         android:id="@+id/ll_date"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
+        android:background="@color/color_ffffff"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -21,7 +22,7 @@
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:text="请选择使用的时间段(北京时间)"
-            android:textColor="@color/color_bbbbbb"
+            android:textColor="@color/color_999999"
             android:textSize="16sp" />
 
         <ImageView

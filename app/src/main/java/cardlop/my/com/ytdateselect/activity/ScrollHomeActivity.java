@@ -9,10 +9,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import cardlop.my.com.ytdateselect.R;
-import cardlop.my.com.ytdateselect.bean.MonthBean;
+import cardlop.my.com.ytdateselect.bean.MonthListBean;
 import cardlop.my.com.ytdateselect.utils.YTDateUtils;
 
 /**
@@ -28,8 +26,6 @@ public class ScrollHomeActivity extends AppCompatActivity implements View.OnClic
 
     private LinearLayout ll_date;
 
-    //数据初始化、保存都在这里，因为要回显
-    private ArrayList<MonthBean> dataList;
 
     private static final int REQUEST_CODE_CHANGE = 101;
 
@@ -52,10 +48,7 @@ public class ScrollHomeActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ll_date:
-                if (dataList == null) {
-                    dataList = YTDateUtils.getOneYearMonthData();
-                }
-                ScrollDateActivity.goResult(this, dataList, REQUEST_CODE_CHANGE);
+                ScrollDateActivity.goResult(this, REQUEST_CODE_CHANGE);
                 break;
         }
     }
@@ -67,13 +60,11 @@ public class ScrollHomeActivity extends AppCompatActivity implements View.OnClic
             case RESULT_OK:
                 switch (requestCode) {
                     case REQUEST_CODE_CHANGE://数据发生变化
-                        //将最新数据赋值
-                        dataList = data.getParcelableArrayListExtra("data");
                         String desc = data.getStringExtra("desc");
-                        if(TextUtils.isEmpty(desc)){
+                        if (TextUtils.isEmpty(desc)) {
                             tv_desc.setText("请选择使用的时间段(北京时间)");
-                            tv_desc.setTextColor(getResources().getColor(R.color.color_bbbbbb));
-                        }else{
+                            tv_desc.setTextColor(getResources().getColor(R.color.color_999999));
+                        } else {
                             tv_desc.setText(desc);
                             tv_desc.setTextColor(getResources().getColor(R.color.color_333333));
                         }
@@ -83,5 +74,12 @@ public class ScrollHomeActivity extends AppCompatActivity implements View.OnClic
                 break;
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //当离开日期展示结果页时，销毁日期数据
+        MonthListBean.onDestory();
     }
 }

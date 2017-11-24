@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_margin="20dp"
-        android:text="上下滚动列表式" />
+        android:text="仿支付宝日期选择器" />
 
 
 </LinearLayout>

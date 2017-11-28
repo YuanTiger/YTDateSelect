@@ -146,6 +146,10 @@ public class YTDateUtils {
         return data;
     }
 
+    /**
+     * 获取从今天开始一年的数据
+     * @return
+     */
     public static ArrayList<MonthBean> getOneYearMonthData() {
         Calendar calendar = Calendar.getInstance();
         return createMonthBean(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH) + 1, calendar.get(Calendar.YEAR) + 1 , calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH) + 1);

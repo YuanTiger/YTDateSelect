@@ -39,8 +39,6 @@ public interface Constant {
         int SELECT = 2;
         //结束日期
         int END = 3;
-
-
     }
 
 }

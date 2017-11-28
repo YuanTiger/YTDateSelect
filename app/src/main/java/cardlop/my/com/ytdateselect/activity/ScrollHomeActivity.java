@@ -68,7 +68,6 @@ public class ScrollHomeActivity extends AppCompatActivity implements View.OnClic
                             tv_desc.setText(desc);
                             tv_desc.setTextColor(getResources().getColor(R.color.color_333333));
                         }
-
                         break;
                 }
                 break;
